@@ -49,6 +49,8 @@ def parse():
                 print colored('++ new entry %s' % entry.title, 'green')
             else:
                 print colored('++ update entry %s' % entry.title, 'yellow')
+
+            time.sleep(2)
             xmpp.publish(feed['server'], key, entry)
 
         # And we update the last updated date for the feed

@@ -60,6 +60,9 @@ class publishx(sleekxmpp.ClientXMPP):
         iq['pubsub']['configure']['form'].addField('pubsub#type',
                                             ftype = 'text-single',
                                             value = NS_ATOM)
+        iq['pubsub']['configure']['form'].addField('pubsub#deliver_payload',
+                                            ftype = 'boolean',
+                                            value = 0)
         iq['pubsub']['configure']['form'].addField('pubsub#description',
                                             ftype = 'text-single',
                                             value = description)
@@ -77,7 +80,6 @@ class publishx(sleekxmpp.ClientXMPP):
         item = pubsub.Item()
         item['id'] = entry.id
 
-        #payload = ET.Item()
         ent = ET.Element("entry")
         ent.set('xmlns', NS_ATOM)
 
@@ -91,7 +93,6 @@ class publishx(sleekxmpp.ClientXMPP):
           content = ET.SubElement(ent, "content")
           content.set('type', entry.content[0].type)
 
-          #document, errors = tidy_document()
           content.text = entry.content[0].value
 
         if(hasattr(entry, 'links')):
