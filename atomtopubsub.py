@@ -47,11 +47,10 @@ def parse():
         for entry in f.entries:            
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print colored('++ new entry %s' % entry.title, 'green')
+                time.sleep(2)
+                xmpp.publish(feed['server'], key, entry)
             else:
                 print colored('++ update entry %s' % entry.title, 'yellow')
-
-            time.sleep(2)
-            xmpp.publish(feed['server'], key, entry)
 
         # And we update the last updated date for the feed
         if(f is not None and hasattr(f, 'updated_parsed')) :
