@@ -1,6 +1,7 @@
 import sys
 import logging
 import getpass
+
 from optparse import OptionParser
 from termcolor import colored, cprint
 
@@ -102,6 +103,13 @@ class publishx(sleekxmpp.ClientXMPP):
                 link.set('type', l['type'])
                 link.set('rel', l['rel'])
 
+        if(hasattr(entry, 'authors')):
+            author = ET.SubElement(ent, "author")
+            name   = ET.SubElement(author, "name")
+            name.text = entry.authors[0].name
+            if(hasattr(entry.authors[0], 'href')):
+                uri    = ET.SubElement(author, "uri")
+                uri.text = entry.authors[0].href
 
         item['payload'] = ent
 
