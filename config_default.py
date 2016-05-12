@@ -1,20 +1,35 @@
 # Feed Settings
 
 feeds = {
-        'FeedName1' : {                                                 # Change this to the name of the group you want to add this feed to
-            'url' : 'http://localhost/feedcleaner/?url=FEEDGOESHERE',   # Replace "FEEDGOESHERE" with the URL to the Atom Feed, leave the rest of of the line intact, see the example below
-            'server' : 'pubsubserver'                                   # Change this to the pubsub servername, including the TLD (eg. pubsub.domain.tld).  See the example below
+        
+        #For ATOMFEED 1.0
+        'FeedName1' : {                                          # Change this to the name of the group you want to add this feed to
+            'url' : 'ATOM1.0FEEDGOESHERE',                       # Replace "ATOM1.0FEEDGOESHERE" with the URL to the Atom Feed 1.0, see the example below with golem url. 
+            'server' : 'pubsubserver'                            # Change this to the pubsub servername, including the TLD (eg. pubsub.domain.tld).  See the example below
             },
+        #EXAMPLE for ATOM1.0 FEED    
         # Add more feeds as you need them using this format
-        #'FeedName2' : {
-        #    'url' : 'http://localhost/feedcleaner/?url=FEEDGOESHERE',
-        #    'server' : 'pubsubserver'
+        #'NewGolemfeed' : {
+        #    'url' : 'http://rss.golem.de/rss.php?feed=ATOM1.0 ',
+        #    'server' : 'pubsub.movim.eu'
         #    },
         # Remember to add a comma ',' after every close bracket except for the last one
-        'Feedname3' : {
-            'url' : 'http://localhost/feedcleaner/?url=http://feedurlhere/rss.xml',
-            'server' : 'pubsub.movim.eu'
+            
+        #EXAMPLE for RSS FEED 
+        # Add more feeds as you need them using this format
+        #'NewTAZGermannews' : {
+        #    'url' : 'https://api.movim.eu/feed/aHR0cHM6Ly93d3cudGF6LmRlLyFwNDYwODthdG9tLw==',
+        #    'server' : 'news.movim.eu'
+        #    },
+        # Remember to add a comma ',' after every close bracket except for the last one
+        
+        #For RSS FEED you need to use the feedcleaner on api.movim.eu just enter the RSS Link in the box and copy it.
+        'Feedname2' : {                                                     # Change this to the name of the group you want to add this feed to
+            'url' : 'RSSFEEDFROMAPI.MOVIM.EUGOESHERE',                      # Replace "RSSFEEDFROMAPI.MOVIM.EUGOESHERE" with the URL you got by entering the RSS url to api.movim.eu, see example above.
+            'server' : 'pubsubserver'                                       # Change this to the pubsub servername, including the TLD (eg. pubsub.domain.tld).  See the example below
             }
+            
+            
     }
 
 # NB. Use Atom v0.3 feeds only
