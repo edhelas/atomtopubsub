@@ -37,7 +37,7 @@ class publishx(sleekxmpp.ClientXMPP):
         self.register_plugin('xep_0060')
 
     def start(self, event):
-        self.send_presence(pshow='chat', pstatus= 'AtomToPubsub')
+        #self.send_presence(ptype= 'invisible', pstatus= 'AtomToPubsub')
         self.get_roster()
 
     def create(self, server, node, feed):
@@ -58,10 +58,13 @@ class publishx(sleekxmpp.ClientXMPP):
         iq['pubsub']['configure']['form'].addField('pubsub#title',
                                             ftype = 'text-single',
                                             value = title)
+	iq['pubsub']['configure']['form'].addField('pubsub#max_items',
+					    ftype = 'text-single',
+					    value = '20')
         iq['pubsub']['configure']['form'].addField('pubsub#type',
                                             ftype = 'text-single',
                                             value = NS_ATOM)
-        iq['pubsub']['configure']['form'].addField('pubsub#deliver_payload',
+        iq['pubsub']['configure']['form'].addField('pubsub#deliver_payloads',
                                             ftype = 'boolean',
                                             value = 0)
         iq['pubsub']['configure']['form'].addField('pubsub#description',
