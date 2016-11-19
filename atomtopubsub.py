@@ -23,23 +23,24 @@ def setup_logging(level):
     ch.setFormatter(formatter)
     log.addHandler(ch)
 
+
 # We feed the pubsub nodes
 def parse(parsed, xmpp):
     imp.reload(config)
 
     # We parse all the feeds
     for key, feed in config.feeds.items():
-        print(colored('>> parsing %s' % key , 'magenta'))
+        print(colored('>> parsing %s' % key, 'magenta'))
         f = feedparser.parse(feed['url'])
 
-        if(f.bozo == 1):
+        if f.bozo == 1:
             print('XML Error')
             if(hasattr(f.bozo_exception, 'getMessage')):
                 print(f.bozo_exception.getMessage())
             if(hasattr(f.bozo_exception, 'getLineNumber')):
                 print('at line %s' % f.bozo_exception.getLineNumber())
 
-        if(not key in parsed):
+        if key not in parsed:
             xmpp.create(feed['server'], key, f.feed)
 
         # We check if we have some new entries
@@ -52,7 +53,7 @@ def parse(parsed, xmpp):
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
 
         # And we update the last updated date for the feed
-        if(f is not None and hasattr(f, 'updated_parsed')) :
+        if f is not None and hasattr(f, 'updated_parsed'):
             parsed[key] = f.updated_parsed
         else:
             print(colored('-- Parse failed for %s' % key, 'red'))
@@ -60,8 +61,10 @@ def parse(parsed, xmpp):
         save(parsed)
 
         # We distribute the parsing
-        print(colored('Parsing next feed in %.2f minutes' % (float(config.refresh_time)/len(config.feeds)), 'cyan'))
-        time.sleep((float(config.refresh_time) * 60)/len(config.feeds))
+        minutes = float(config.refresh_time) / len(config.feeds)
+        print(colored('Parsing next feed in %.2f minutes' % minutes, 'cyan'))
+        time.sleep(minutes * 60)
+
 
 def load():
     try:
@@ -73,11 +76,13 @@ def load():
         print('Creating the cache')
         return save({})
 
+
 def save(parsed):
     output = open('cache.pkl', 'wb')
     pickle.dump(parsed, output)
     output.close()
     return {}
+
 
 def main():
     setup_logging(logging.INFO)
@@ -88,8 +93,8 @@ def main():
     connected = xmpp.connect()
     xmpp.process()
 
-    if(connected) :
-        while(1):
+    if connected:
+        while True:
             try:
                 parse(parsed, xmpp)
 
@@ -97,6 +102,7 @@ def main():
                 xmpp.disconnect(wait=True)
                 print("Exiting...")
                 break
+
 
 if __name__ == '__main__':
     main()
