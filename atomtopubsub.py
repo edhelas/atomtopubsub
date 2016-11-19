@@ -23,14 +23,8 @@ def setup_logging(level):
     ch.setFormatter(formatter)
     log.addHandler(ch)
 
-setup_logging(logging.INFO)
-
-parsed = {}
-connected = False
-xmpp = publishx.publishx(config)
-
 # We feed the pubsub nodes
-def parse():
+def parse(parsed, xmpp):
     imp.reload(config)
 
     # We parse all the feeds
@@ -63,7 +57,7 @@ def parse():
         else:
             print(colored('-- Parse failed for %s' % key, 'red'))
 
-        save()
+        save(parsed)
 
         # We distribute the parsing
         print(colored('Parsing next feed in %.2f minutes' % (float(config.refresh_time)/len(config.feeds)), 'cyan'))
@@ -77,24 +71,32 @@ def load():
         return parsed
     except IOError:
         print('Creating the cache')
-        return save()
+        return save({})
 
-def save():
+def save(parsed):
     output = open('cache.pkl', 'wb')
     pickle.dump(parsed, output)
     output.close()
     return {}
 
-parsed = load()
-connected = xmpp.connect()
-xmpp.process()
+def main():
+    setup_logging(logging.INFO)
 
-if(connected) :
-    while(1):
-        try:
-            parse()
+    parsed = load()
 
-        except KeyboardInterrupt:
-            xmpp.disconnect(wait=True)
-            print("Exiting...")
-            break
+    xmpp = publishx.publishx(config)
+    connected = xmpp.connect()
+    xmpp.process()
+
+    if(connected) :
+        while(1):
+            try:
+                parse(parsed, xmpp)
+
+            except KeyboardInterrupt:
+                xmpp.disconnect(wait=True)
+                print("Exiting...")
+                break
+
+if __name__ == '__main__':
+    main()
