@@ -58,9 +58,9 @@ class publishx(sleekxmpp.ClientXMPP):
         iq['pubsub']['configure']['form'].addField('pubsub#title',
                                             ftype = 'text-single',
                                             value = title)
-	iq['pubsub']['configure']['form'].addField('pubsub#max_items',
-					    ftype = 'text-single',
-					    value = '20')
+        iq['pubsub']['configure']['form'].addField('pubsub#max_items',
+                                            ftype = 'text-single',
+                                            value = '20')
         iq['pubsub']['configure']['form'].addField('pubsub#type',
                                             ftype = 'text-single',
                                             value = NS_ATOM)
