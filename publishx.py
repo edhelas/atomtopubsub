@@ -10,13 +10,14 @@ from termcolor import colored, cprint
 import sleekxmpp
 from sleekxmpp.xmlstream import ET, tostring
 import sleekxmpp.plugins.xep_0060.stanza.pubsub as pubsub
+import imp
 
 # Python versions before 3.0 do not use UTF-8 encoding
 # by default. To ensure that Unicode is handled properly
 # throughout SleekXMPP, we will set the default encoding
 # ourselves to UTF-8.
 if sys.version_info < (3, 0):
-    reload(sys)
+    imp.reload(sys)
     sys.setdefaultencoding('utf8')
 else:
     raw_input = input
@@ -47,7 +48,7 @@ class publishx(sleekxmpp.ClientXMPP):
             title = feed.title
             if(hasattr(feed, 'subtitle')):
                 description = feed.subtitle
-        print colored('>> create %s' % title, 'blue')
+        print(colored('>> create %s' % title, 'blue'))
 
         iq = self.Iq(stype="set", sto = server)
         iq['pubsub']['create']['node'] = node
@@ -72,9 +73,9 @@ class publishx(sleekxmpp.ClientXMPP):
                                             value = description)
 
         try:
-            print iq.send(timeout=5)
+            print(iq.send(timeout=5))
         except:
-            print 'Iq Error'
+            print('Iq Error')
 
     def publish(self, server, node, entry):
 
@@ -119,8 +120,8 @@ class publishx(sleekxmpp.ClientXMPP):
         iq['pubsub']['publish'].append(item)
 
         try:
-            print iq.send(timeout=5)
+            print(iq.send(timeout=5))
         except:
-            print 'Iq Error'
+            print('Iq Error')
     def published():
-        print 'published'
+        print('published')

@@ -8,6 +8,7 @@ import publishx
 import config
 
 import logging
+import imp
 
 log = logging.getLogger('sleekxmpp')
 log.setLevel(logging.INFO)
@@ -26,19 +27,19 @@ xmpp = publishx.publishx(config)
 
 # We feed the pubsub nodes
 def parse():
-    reload(config)
+    imp.reload(config)
 
     # We parse all the feeds
-    for key, feed in config.feeds.iteritems():
-        print colored('>> parsing %s' % key , 'magenta')
+    for key, feed in config.feeds.items():
+        print(colored('>> parsing %s' % key , 'magenta'))
         f = feedparser.parse(feed['url'])
 
         if(f.bozo == 1):
-            print 'XML Error'
+            print('XML Error')
             if(hasattr(f.bozo_exception, 'getMessage')):
-                print f.bozo_exception.getMessage()
+                print(f.bozo_exception.getMessage())
             if(hasattr(f.bozo_exception, 'getLineNumber')):
-                print 'at line %s' % f.bozo_exception.getLineNumber()
+                print('at line %s' % f.bozo_exception.getLineNumber())
 
         if(not key in parsed):
             xmpp.create(feed['server'], key, f.feed)
@@ -46,22 +47,22 @@ def parse():
         # We check if we have some new entries
         for entry in f.entries:            
             if key not in parsed or parsed[key] < entry.updated_parsed:
-                print colored('++ new entry %s' % entry.title, 'green')
+                print(colored('++ new entry %s' % entry.title, 'green'))
                 time.sleep(2)
                 xmpp.publish(feed['server'], key, entry)
             else:
-                print colored('++ update entry %s' % entry.title, 'yellow')
+                print(colored('++ update entry %s' % entry.title, 'yellow'))
 
         # And we update the last updated date for the feed
         if(f is not None and hasattr(f, 'updated_parsed')) :
             parsed[key] = f.updated_parsed
         else:
-            print colored('-- Parse failed for %s' % key, 'red')
+            print(colored('-- Parse failed for %s' % key, 'red'))
 
         save()
 
         # We distribute the parsing
-        print colored('Parsing next feed in %.2f minutes' % (float(config.refresh_time)/len(config.feeds)), 'cyan')
+        print(colored('Parsing next feed in %.2f minutes' % (float(config.refresh_time)/len(config.feeds)), 'cyan'))
         time.sleep((float(config.refresh_time) * 60)/len(config.feeds))
 
 def load():
@@ -71,7 +72,7 @@ def load():
         pkl_file.close()
         return parsed
     except IOError:
-        print 'Creating the cache'
+        print('Creating the cache')
         return save()
 
 def save():
@@ -91,5 +92,5 @@ if(connected) :
 
         except KeyboardInterrupt:
             xmpp.disconnect(wait=True)
-            print "Exiting..."
+            print("Exiting...")
             break
