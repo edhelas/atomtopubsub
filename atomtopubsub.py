@@ -16,7 +16,7 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 formatter = logging.Formatter('%(message)s')
 ch.setFormatter(formatter)
-log.addHandler(ch) 
+log.addHandler(ch)
 
 from socket import error as SocketError
 from termcolor import colored, cprint
@@ -45,7 +45,7 @@ def parse():
             xmpp.create(feed['server'], key, f.feed)
 
         # We check if we have some new entries
-        for entry in f.entries:            
+        for entry in f.entries:
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print(colored('++ new entry %s' % entry.title, 'green'))
                 time.sleep(2)
@@ -81,7 +81,7 @@ def save():
     output.close()
     return {}
 
-parsed = load()          
+parsed = load()
 connected = xmpp.connect()
 xmpp.process()
 

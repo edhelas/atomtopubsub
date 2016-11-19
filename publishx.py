@@ -31,7 +31,7 @@ class publishx(sleekxmpp.ClientXMPP):
         fulljid    = config.jid + "/" + config.resource
         secret     = config.secret
         resource   = config.resource
-        
+
         sleekxmpp.ClientXMPP.__init__(self, fulljid, secret)
 
         self.add_event_handler("session_start", self.start)
