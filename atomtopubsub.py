@@ -10,16 +10,20 @@ import config
 import logging
 import imp
 
-log = logging.getLogger('sleekxmpp')
-log.setLevel(logging.INFO)
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-formatter = logging.Formatter('%(message)s')
-ch.setFormatter(formatter)
-log.addHandler(ch)
-
 from socket import error as SocketError
 from termcolor import colored, cprint
+
+
+def setup_logging(level):
+    log = logging.getLogger('atomtopubsub')
+    log.setLevel(level)
+    ch = logging.StreamHandler()
+    ch.setLevel(level)
+    formatter = logging.Formatter('%(message)s')
+    ch.setFormatter(formatter)
+    log.addHandler(ch)
+
+setup_logging(logging.INFO)
 
 parsed = {}
 connected = False
