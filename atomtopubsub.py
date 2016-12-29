@@ -10,8 +10,7 @@ import config
 import logging
 import imp
 
-from socket import error as SocketError
-from termcolor import colored, cprint
+from termcolor import colored
 
 
 def setup_logging(level):
