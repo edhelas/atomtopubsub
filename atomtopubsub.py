@@ -53,9 +53,9 @@ async def parse(parsed, xmpp):
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
 
         # And we update the last updated date for the feed
-        if f is not None and hasattr(f, 'updated_parsed'):
-            parsed[key] = f.updated_parsed
-        else:
+        try:
+            parsed[key] = f.feed.updated_parsed
+        except AttributeError:
             print(colored('-- Parse failed for %s' % key, 'red'))
 
         save(parsed)
