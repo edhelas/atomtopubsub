@@ -9,7 +9,7 @@ NS_ATOM = 'http://www.w3.org/2005/Atom'
 NS_JABBER_DATA = 'jabber:x:data'
 
 
-class publishx(slixmpp.ClientXMPP):
+class Publishx(slixmpp.ClientXMPP):
     def __init__(self, config):
         jid = config.jid
         fulljid = config.jid + "/" + config.resource

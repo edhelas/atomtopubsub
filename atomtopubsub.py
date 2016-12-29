@@ -5,7 +5,7 @@ import feedparser
 import time
 import pickle
 
-import publishx
+from publishx import Publishx
 import config
 
 import logging
@@ -88,7 +88,7 @@ def save(parsed):
 def main():
     setup_logging(logging.INFO)
 
-    xmpp = publishx.publishx(config)
+    xmpp = Publishx(config)
     xmpp.connect()
     xmpp.process(timeout=2)
     asyncio.ensure_future(parse(load(), xmpp))
