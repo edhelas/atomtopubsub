@@ -47,7 +47,6 @@ async def parse(parsed, xmpp):
         for entry in f.entries:
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print(colored('++ new entry %s' % entry.title, 'green'))
-                await asyncio.sleep(1)
                 await xmpp.publish(feed['server'], key, entry)
             else:
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
