@@ -53,25 +53,26 @@ class publishx(sleekxmpp.ClientXMPP):
 
         iq = self.Iq(stype="set", sto=server)
         iq['pubsub']['create']['node'] = node
-        iq['pubsub']['configure']['form']['type'] = 'submit'
-        iq['pubsub']['configure']['form'].addField('pubsub#persist_items',
-                                                   ftype='boolean',
-                                                   value=1)
-        iq['pubsub']['configure']['form'].addField('pubsub#title',
-                                                   ftype='text-single',
-                                                   value=title)
-        iq['pubsub']['configure']['form'].addField('pubsub#max_items',
-                                                   ftype='text-single',
-                                                   value='20')
-        iq['pubsub']['configure']['form'].addField('pubsub#type',
-                                                   ftype='text-single',
-                                                   value=NS_ATOM)
-        iq['pubsub']['configure']['form'].addField('pubsub#deliver_payloads',
-                                                   ftype='boolean',
-                                                   value=0)
-        iq['pubsub']['configure']['form'].addField('pubsub#description',
-                                                   ftype='text-single',
-                                                   value=description)
+        form = iq['pubsub']['configure']['form']
+        form['type'] = 'submit'
+        form.addField('pubsub#persist_items',
+                      ftype='boolean',
+                      value=1)
+        form.addField('pubsub#title',
+                      ftype='text-single',
+                      value=title)
+        form.addField('pubsub#max_items',
+                      ftype='text-single',
+                      value='20')
+        form.addField('pubsub#type',
+                      ftype='text-single',
+                      value=NS_ATOM)
+        form.addField('pubsub#deliver_payloads',
+                      ftype='boolean',
+                      value=0)
+        form.addField('pubsub#description',
+                      ftype='text-single',
+                      value=description)
 
         try:
             print(iq.send(timeout=5))
