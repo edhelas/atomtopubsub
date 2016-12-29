@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import asyncio
 import feedparser
 import time
 import pickle
@@ -24,7 +25,7 @@ def setup_logging(level):
 
 
 # We feed the pubsub nodes
-def parse(parsed, xmpp):
+async def parse(parsed, xmpp):
     imp.reload(config)
 
     # We parse all the feeds
@@ -40,14 +41,14 @@ def parse(parsed, xmpp):
                 print('at line %s' % f.bozo_exception.getLineNumber())
 
         if key not in parsed:
-            xmpp.create(feed['server'], key, f.feed)
+            await xmpp.create(feed['server'], key, f.feed)
 
         # We check if we have some new entries
         for entry in f.entries:
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print(colored('++ new entry %s' % entry.title, 'green'))
-                time.sleep(2)
-                xmpp.publish(feed['server'], key, entry)
+                await asyncio.sleep(1)
+                await xmpp.publish(feed['server'], key, entry)
             else:
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
 
@@ -62,7 +63,8 @@ def parse(parsed, xmpp):
         # We distribute the parsing
         minutes = float(config.refresh_time) / len(config.feeds)
         print(colored('Parsing next feed in %.2f minutes' % minutes, 'cyan'))
-        time.sleep(minutes * 60)
+        await asyncio.sleep(minutes * 60)
+        asyncio.ensure_future(parse(parsed, xmpp))
 
 
 def load():
@@ -86,21 +88,11 @@ def save(parsed):
 def main():
     setup_logging(logging.INFO)
 
-    parsed = load()
-
     xmpp = publishx.publishx(config)
-    connected = xmpp.connect()
+    xmpp.connect()
+    xmpp.process(timeout=2)
+    asyncio.ensure_future(parse(load(), xmpp))
     xmpp.process()
-
-    if connected:
-        while True:
-            try:
-                parse(parsed, xmpp)
-
-            except KeyboardInterrupt:
-                xmpp.disconnect(wait=True)
-                print("Exiting...")
-                break
 
 
 if __name__ == '__main__':

@@ -1,21 +1,22 @@
 from termcolor import colored
 
-import sleekxmpp
-from sleekxmpp.xmlstream import ET
-import sleekxmpp.plugins.xep_0060.stanza.pubsub as pubsub
+import slixmpp
+from slixmpp.xmlstream import ET
+import slixmpp.plugins.xep_0060.stanza.pubsub as pubsub
+from slixmpp.exceptions import IqError
 
 NS_ATOM = 'http://www.w3.org/2005/Atom'
 NS_JABBER_DATA = 'jabber:x:data'
 
 
-class publishx(sleekxmpp.ClientXMPP):
+class publishx(slixmpp.ClientXMPP):
     def __init__(self, config):
         jid = config.jid
         fulljid = config.jid + "/" + config.resource
         secret = config.secret
         resource = config.resource
 
-        sleekxmpp.ClientXMPP.__init__(self, fulljid, secret)
+        slixmpp.ClientXMPP.__init__(self, fulljid, secret)
 
         self.add_event_handler("session_start", self.start)
         self.register_plugin('xep_0060')
@@ -24,7 +25,7 @@ class publishx(sleekxmpp.ClientXMPP):
         #self.send_presence(ptype='invisible', pstatus='AtomToPubsub')
         self.get_roster()
 
-    def create(self, server, node, feed):
+    async def create(self, server, node, feed):
         title = description = logo = ''
 
         if hasattr(feed, 'title'):
@@ -56,12 +57,16 @@ class publishx(sleekxmpp.ClientXMPP):
                       ftype='text-single',
                       value=description)
 
+        task = iq.send(timeout=5)
         try:
-            print(iq.send(timeout=5))
-        except:
-            print('Iq Error')
+            await task
+        except IqError as e:
+            if e.etype == 'cancel' and e.condition == 'conflict':
+                print(colored('!! node %s is already created, assuming its configuration is correct' % node, 'yellow'))
+                return
+            raise
 
-    def publish(self, server, node, entry):
+    async def publish(self, server, node, entry):
         iq = self.Iq(stype="set", sto=server)
         iq['pubsub']['publish']['node'] = node
 
@@ -102,10 +107,11 @@ class publishx(sleekxmpp.ClientXMPP):
 
         iq['pubsub']['publish'].append(item)
 
+        task = iq.send(timeout=5)
         try:
-            print(iq.send(timeout=5))
-        except:
-            print('Iq Error')
+            await task
+        except IqError:
+            raise
 
     def published():
         print('published')
