@@ -5,15 +5,15 @@ the entries to a designated [XMPP Pubsub Node](http://xmpp.org/extensions/xep-00
 
 ## Requirements
 
-* Python
+* Python >= 3.5
 * GIT Core
 * PIP
 * feedparser
 * jsonpickle
-* sleekxmpp
+* slixmpp
 * screen
 
-AtomToPubsub is built using Python 2.6 and use the librairies
+AtomToPubsub is built using Python 3.5 and uses the libraries
 
 ## Installation
 
