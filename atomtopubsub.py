@@ -9,7 +9,7 @@ from publishx import Publishx
 import config
 
 import logging
-import imp
+import importlib as imp
 
 from termcolor import colored
 
