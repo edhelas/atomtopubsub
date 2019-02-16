@@ -2,7 +2,6 @@
 
 import asyncio
 import feedparser
-import time
 import pickle
 
 from publishx import Publishx
@@ -12,6 +11,7 @@ import logging
 import importlib as imp
 
 from termcolor import colored
+from bs4 import BeautifulSoup
 
 
 def setup_logging(level):
@@ -35,9 +35,9 @@ async def parse(parsed, xmpp):
 
         if f.bozo == 1:
             print('XML Error')
-            if(hasattr(f.bozo_exception, 'getMessage')):
+            if hasattr(f.bozo_exception, 'getMessage'):
                 print(f.bozo_exception.getMessage())
-            if(hasattr(f.bozo_exception, 'getLineNumber')):
+            if hasattr(f.bozo_exception, 'getLineNumber'):
                 print('at line %s' % f.bozo_exception.getLineNumber())
 
         if key not in parsed:
@@ -47,6 +47,17 @@ async def parse(parsed, xmpp):
         for entry in f.entries:
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print(colored('++ new entry %s' % entry.title, 'green'))
+                if hasattr(entry.content[0], 'type'):
+                    # soup = BeautifulSoup(entry.content[0].value, 'lxml')
+                    soup = BeautifulSoup(entry.content[0].value, 'html.parser')
+                    entry.content[0].type = 'xhtml'
+                    content_value = soup.prettify().splitlines()
+                    content_value = [""""<div xmlns="http://www.w3.org/1999/xhtml">\n"""] + content_value + \
+                                    ["""\n</div>"""]
+                    try:
+                        entry.content[0].value = content_value
+                    except TypeError:
+                        pass
                 await xmpp.publish(feed['server'], key, entry)
             else:
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
