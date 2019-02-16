@@ -22,7 +22,7 @@ class Publishx(slixmpp.ClientXMPP):
         self.register_plugin('xep_0060')
 
     def start(self, event):
-        #self.send_presence(ptype='invisible', pstatus='AtomToPubsub')
+        # self.send_presence(ptype='invisible', pstatus='AtomToPubsub')
         self.get_roster()
 
     async def create(self, server, node, feed):
