@@ -44,7 +44,7 @@ async def parse(parsed, xmpp):
             await xmpp.create(feed['server'], key, f.feed)
 
         # We check if we have some new entries
-        for entry in f.entries:
+        for entry in reversed(f.entries):
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print(colored('++ new entry %s' % entry.title, 'green'))
                 if hasattr(entry.content[0], 'type'):
