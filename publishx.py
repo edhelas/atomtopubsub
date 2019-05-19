@@ -22,7 +22,7 @@ class Publishx(slixmpp.ClientXMPP):
         self.register_plugin('xep_0060')
 
     def start(self, event):
-        #self.send_presence(ptype='invisible', pstatus='AtomToPubsub')
+        # self.send_presence(ptype='invisible', pstatus='AtomToPubsub')
         self.get_roster()
 
     async def create(self, server, node, feed):
@@ -85,7 +85,6 @@ class Publishx(slixmpp.ClientXMPP):
         if hasattr(entry.content[0], 'type'):
             content = ET.SubElement(ent, "content")
             content.set('type', entry.content[0].type)
-
             content.text = entry.content[0].value
 
         if hasattr(entry, 'links'):
@@ -113,5 +112,5 @@ class Publishx(slixmpp.ClientXMPP):
         except IqError:
             raise
 
-    def published():
+    def published(self):
         print('published')
