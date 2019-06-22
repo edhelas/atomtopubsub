@@ -71,7 +71,8 @@ class Publishx(slixmpp.ClientXMPP):
         iq['pubsub']['publish']['node'] = node
 
         item = pubsub.Item()
-        item['id'] = entry.id
+        # character / is causing a bug in movim. replacing : and , with - in id. It provides nicer urls.
+        item['id'] = str(entry.id).replace('/', '-').replace(':', '-').replace(',', '-')
 
         ent = ET.Element("entry")
         ent.set('xmlns', NS_ATOM)
@@ -106,7 +107,7 @@ class Publishx(slixmpp.ClientXMPP):
 
         iq['pubsub']['publish'].append(item)
 
-        task = iq.send(timeout=5)
+        task = iq.send(timeout=20)
         try:
             await task
         except IqError:
