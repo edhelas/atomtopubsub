@@ -4,6 +4,7 @@ import slixmpp
 from slixmpp.xmlstream import ET
 import slixmpp.plugins.xep_0060.stanza.pubsub as pubsub
 from slixmpp.exceptions import IqError
+import re
 
 NS_ATOM = 'http://www.w3.org/2005/Atom'
 NS_JABBER_DATA = 'jabber:x:data'
@@ -71,7 +72,9 @@ class Publishx(slixmpp.ClientXMPP):
         iq['pubsub']['publish']['node'] = node
 
         item = pubsub.Item()
-        item['id'] = entry.id
+        # character / is causing a bug in movim. replacing : and , with - in id. It provides nicer urls.
+        rex = re.compile(r'[:,\/]')
+        item['id'] = rex.sub('-', str(entry.id))
 
         ent = ET.Element("entry")
         ent.set('xmlns', NS_ATOM)
@@ -106,7 +109,7 @@ class Publishx(slixmpp.ClientXMPP):
 
         iq['pubsub']['publish'].append(item)
 
-        task = iq.send(timeout=5)
+        task = iq.send(timeout=20)
         try:
             await task
         except IqError:
