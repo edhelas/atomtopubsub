@@ -74,7 +74,7 @@ async def parse(parsed, xmpp):
         minutes = float(config.refresh_time) / len(config.feeds)
         print(colored('Parsing next feed in %.2f minutes' % minutes, 'cyan'))
         await asyncio.sleep(minutes * 60)
-        asyncio.ensure_future(parse(parsed, xmpp))
+    asyncio.ensure_future(parse(parsed, xmpp))
 
 
 def load():
