@@ -18,13 +18,7 @@ class Publishx(slixmpp.ClientXMPP):
         resource = config.resource
 
         slixmpp.ClientXMPP.__init__(self, fulljid, secret)
-
-        self.add_event_handler("session_start", self.start)
         self.register_plugin('xep_0060')
-
-    def start(self, event):
-        # self.send_presence(ptype='invisible', pstatus='AtomToPubsub')
-        self.get_roster()
 
     async def create(self, server, node, feed):
         title = description = logo = ''
