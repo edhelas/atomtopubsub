@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import asyncio
 import feedparser
@@ -74,7 +74,7 @@ async def parse(parsed, xmpp):
         minutes = float(config.refresh_time) / len(config.feeds)
         print(colored('Parsing next feed in %.2f minutes' % minutes, 'cyan'))
         await asyncio.sleep(minutes * 60)
-        asyncio.ensure_future(parse(parsed, xmpp))
+    asyncio.ensure_future(parse(parsed, xmpp))
 
 
 def load():
@@ -100,8 +100,7 @@ def main():
 
     xmpp = Publishx(config)
     xmpp.connect()
-    xmpp.process(timeout=2)
-    asyncio.ensure_future(parse(load(), xmpp))
+    xmpp.add_event_handler('session_start', lambda _: asyncio.ensure_future(parse(load(), xmpp)))
     xmpp.process()
 
 
