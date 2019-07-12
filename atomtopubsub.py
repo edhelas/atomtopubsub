@@ -100,8 +100,7 @@ def main():
 
     xmpp = Publishx(config)
     xmpp.connect()
-    xmpp.process(timeout=2)
-    asyncio.ensure_future(parse(load(), xmpp))
+    xmpp.add_event_handler('session_start', lambda _: asyncio.ensure_future(parse(load(), xmpp)))
     xmpp.process()
 
 
