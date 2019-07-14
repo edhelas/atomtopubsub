@@ -3,7 +3,7 @@ from termcolor import colored
 import slixmpp
 from slixmpp.xmlstream import ET
 import slixmpp.plugins.xep_0060.stanza.pubsub as pubsub
-from slixmpp.exceptions import IqError
+from slixmpp.exceptions import IqError, IqTimeout
 import re
 
 NS_ATOM = 'http://www.w3.org/2005/Atom'
@@ -103,11 +103,11 @@ class Publishx(slixmpp.ClientXMPP):
 
         iq['pubsub']['publish'].append(item)
 
-        task = iq.send(timeout=20)
+        task = iq.send(timeout=5)
         try:
             await task
-        except IqError:
-            raise
+        except (IqError, IqTimeout):
+            pass
 
     def published(self):
         print('published')

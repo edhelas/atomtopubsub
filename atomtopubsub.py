@@ -11,8 +11,7 @@ import logging
 import importlib as imp
 
 from termcolor import colored
-from bs4 import BeautifulSoup
-
+from bs4 import BeautifulSoup, Comment
 
 def setup_logging(level):
     log = logging.getLogger('atomtopubsub')
@@ -50,6 +49,11 @@ async def parse(parsed, xmpp):
                 if hasattr(entry.content[0], 'type'):
                     # soup = BeautifulSoup(entry.content[0].value, 'lxml')
                     soup = BeautifulSoup(entry.content[0].value, 'html.parser')
+                    comments = soup.findAll(text=lambda text:isinstance(text, Comment))
+
+                    for comment in comments:
+                        comment.extract()
+
                     entry.content[0].type = 'xhtml'
                     content_value = soup.prettify().splitlines()
                     content_value = [""""<div xmlns="http://www.w3.org/1999/xhtml">\n"""] + content_value + \
