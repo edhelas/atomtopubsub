@@ -9,7 +9,6 @@ import re
 NS_ATOM = 'http://www.w3.org/2005/Atom'
 NS_JABBER_DATA = 'jabber:x:data'
 
-
 class Publishx(slixmpp.ClientXMPP):
     def __init__(self, config):
         jid = config.jid
@@ -106,7 +105,8 @@ class Publishx(slixmpp.ClientXMPP):
         task = iq.send(timeout=5)
         try:
             await task
-        except (IqError, IqTimeout):
+        except (IqError, IqTimeout) as e:
+            print(e)
             pass
 
     def published(self):

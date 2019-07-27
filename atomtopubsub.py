@@ -12,6 +12,7 @@ import importlib as imp
 
 from termcolor import colored
 from bs4 import BeautifulSoup, Comment
+from xml.etree import ElementTree
 
 def setup_logging(level):
     log = logging.getLogger('atomtopubsub')
@@ -49,19 +50,26 @@ async def parse(parsed, xmpp):
                 if hasattr(entry.content[0], 'type'):
                     # soup = BeautifulSoup(entry.content[0].value, 'lxml')
                     soup = BeautifulSoup(entry.content[0].value, 'html.parser')
+                    entry.content[0].type = 'xhtml'
+
                     comments = soup.findAll(text=lambda text:isinstance(text, Comment))
 
                     for comment in comments:
                         comment.extract()
 
-                    entry.content[0].type = 'xhtml'
-                    content_value = soup.prettify().splitlines()
-                    content_value = [""""<div xmlns="http://www.w3.org/1999/xhtml">\n"""] + content_value + \
-                                    ["""\n</div>"""]
+                    content_value = ('<div xmlns="http://www.w3.org/1999/xhtml">\n%s\n</div>' % soup.prettify()).splitlines()
+
                     try:
                         entry.content[0].value = content_value
                     except TypeError:
                         pass
+                # mathieui: bon c'est un peu sale comème lô
+                try:
+                    ElementTree.fromstring(''.join(entry.content[0].value))
+                except Exception as e:
+                    print(e)
+                    print(colored('-- XML parsing failed for %s' %  entry.title, 'red'))
+                    continue
                 await xmpp.publish(feed['server'], key, entry)
             else:
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
