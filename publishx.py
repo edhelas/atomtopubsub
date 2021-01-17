@@ -6,6 +6,7 @@ import slixmpp.plugins.xep_0060.stanza.pubsub as pubsub
 from slixmpp.exceptions import IqError, IqTimeout
 import re
 
+
 NS_ATOM = 'http://www.w3.org/2005/Atom'
 NS_JABBER_DATA = 'jabber:x:data'
 
@@ -60,7 +61,7 @@ class Publishx(slixmpp.ClientXMPP):
                 return
             raise
 
-    async def publish(self, server, node, entry):
+    async def publish(self, server, node, entry, version):
         iq = self.Iq(stype="set", sto=server)
         iq['pubsub']['publish']['node'] = node
 
@@ -78,11 +79,19 @@ class Publishx(slixmpp.ClientXMPP):
         updated = ET.SubElement(ent, "updated")
         updated.text = entry.updated
 
-        if hasattr(entry.content[0], 'type'):
-            content = ET.SubElement(ent, "content")
-            content.set('type', entry.content[0].type)
-            content.text = entry.content[0].value
+        if version == 'atom3':
 
+            if hasattr(entry.content[0], 'type'):
+                content = ET.SubElement(ent, "content")
+                content.set('type', entry.content[0].type)
+                content.text = entry.content[0].value
+        
+        elif version =='rss20':
+            content = ET.SubElement(ent,"content")
+            content.set('type', 'text/html')
+            content.text = entry.description
+            print(content.text)
+            
         if hasattr(entry, 'links'):
             for l in entry.links:
                 link = ET.SubElement(ent, "link")
@@ -95,14 +104,24 @@ class Publishx(slixmpp.ClientXMPP):
                 tag = ET.SubElement(ent, "category")
                 tag.set('term', t.term)
 
-        if hasattr(entry, 'authors'):
-            author = ET.SubElement(ent, "author")
-            name = ET.SubElement(author, "name")
-            name.text = entry.authors[0].name
-            if hasattr(entry.authors[0], 'href'):
+        if version == 'atom03':
+            if hasattr(entry, 'authors'):
+                author = ET.SubElement(ent, "author")
+                name = ET.SubElement(author, "name")
+                name.text = entry.authors[0].name
+                if hasattr(entry.authors[0], 'href'):
+                    uri = ET.SubElement(author, "uri")
+                    uri.text = entry.authors[0].href
+        elif version == 'rss20':
+            if hasattr(entry, 'author'):
+                author = ET.SubElement(ent, "author")
+                name = ET.SubElement(ent, "author")
+                name.text = entry.author
+            
+            if hasattr(entry, 'author') and hasattr(entry.author, 'href'):
                 uri = ET.SubElement(author, "uri")
                 uri.text = entry.authors[0].href
-
+                    
         item['payload'] = ent
 
         iq['pubsub']['publish'].append(item)

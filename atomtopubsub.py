@@ -32,7 +32,10 @@ async def parse(parsed, xmpp):
     for key, feed in config.feeds.items():
         print(colored('>> parsing %s' % key, 'magenta'))
         f = feedparser.parse(feed['url'])
-
+        version = f.version
+        print('Version %s' % version)
+        
+        
         if f.bozo == 1:
             print('XML Error')
             if hasattr(f.bozo_exception, 'getMessage'):
@@ -47,7 +50,13 @@ async def parse(parsed, xmpp):
         for entry in reversed(f.entries):
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print(colored('++ new entry %s' % entry.title, 'green'))
-                if hasattr(entry.content[0], 'type'):
+                
+                if version == 'rss20':
+                    print(colored('In rss20','red'))
+                    soup = BeautifulSoup(entry.description, 'html.parser')
+                    entry.description = soup.prettify()
+                    
+                elif version == 'atom03':
                     # soup = BeautifulSoup(entry.content[0].value, 'lxml')
                     soup = BeautifulSoup(entry.content[0].value, 'html.parser')
                     entry.content[0].type = 'xhtml'
@@ -63,14 +72,20 @@ async def parse(parsed, xmpp):
                         entry.content[0].value = content_value
                     except TypeError:
                         pass
-                # mathieui: bon c'est un peu sale comème lô
-                try:
-                    ElementTree.fromstring(''.join(entry.content[0].value))
-                except Exception as e:
-                    print(e)
-                    print(colored('-- XML parsing failed for %s' %  entry.title, 'red'))
-                    continue
-                await xmpp.publish(feed['server'], key, entry)
+                
+                    try:
+                        ElementTree.fromstring(''.join(entry.content[0].value))
+                    except Exception as e:
+                        print(e)
+                        print(colored('-- XML parsing failed for %s' %  entry.title, 'red'))
+                        continue
+                else:
+                    print(colored('>> Yet to be done', "yellow"))
+                    
+                print('Out of If/Else Statements')        
+                await xmpp.publish(feed['server'], key, entry, version)
+                
+                
             else:
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
 
