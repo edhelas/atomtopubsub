@@ -8,7 +8,8 @@ from publishx import Publishx
 
 # Add the ability to run atomtopubsub as a daemon - requires Daemonize as a dependency
 from daemonize import Daemonize
-import tempfile
+import os
+
 
 pid = "/tmp/atomtopubsub.pid"
 
@@ -89,7 +90,6 @@ async def parse(parsed, xmpp):
                 else:
                     print(colored('>> Yet to be done', "yellow"))
                     
-                print('Out of If/Else Statements')        
                 await xmpp.publish(feed['server'], key, entry, version)
                 
                 
@@ -137,8 +137,10 @@ def main():
     xmpp.add_event_handler('session_start', lambda _: asyncio.ensure_future(parse(load(), xmpp)))
     xmpp.process()
 
-daemon = Daemonize(app='atomtopubsub', pid = pid, action = main)
+curr_dir = os.getcwd() #Needed so that A2SP can find the config files etc when using daemonize
+
+daemon = Daemonize(app='atomtopubsub', pid = pid, action = main, foreground=True, chdir= curr_dir)
 daemon.start()
 
-""" if __name__ == '__main__':
-    main() """
+#if __name__ == '__main__':
+#    main()

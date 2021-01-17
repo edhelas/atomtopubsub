@@ -1,3 +1,4 @@
+import logging
 from termcolor import colored
 
 import slixmpp
@@ -90,7 +91,7 @@ class Publishx(slixmpp.ClientXMPP):
             content = ET.SubElement(ent,"content")
             content.set('type', 'text/html')
             content.text = entry.description
-            print(content.text)
+            
             
         if hasattr(entry, 'links'):
             for l in entry.links:
