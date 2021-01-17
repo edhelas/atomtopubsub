@@ -118,9 +118,9 @@ class Publishx(slixmpp.ClientXMPP):
                 name = ET.SubElement(ent, "author")
                 name.text = entry.author
             
-            if hasattr(entry, 'author') and hasattr(entry.author, 'href'):
-                uri = ET.SubElement(author, "uri")
-                uri.text = entry.authors[0].href
+                if hasattr(entry.author, 'href'):
+                    uri = ET.SubElement(author, "uri")
+                    uri.text = entry.authors[0].href
                     
         item['payload'] = ent
 
