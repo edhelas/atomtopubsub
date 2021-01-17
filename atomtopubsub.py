@@ -5,6 +5,13 @@ import feedparser
 import pickle
 
 from publishx import Publishx
+
+# Add the ability to run atomtopubsub as a daemon - requires Daemonize as a dependency
+from daemonize import Daemonize
+import tempfile
+
+pid = "/tmp/atomtopubsub.pid"
+
 import config
 
 import logging
@@ -130,6 +137,8 @@ def main():
     xmpp.add_event_handler('session_start', lambda _: asyncio.ensure_future(parse(load(), xmpp)))
     xmpp.process()
 
+daemon = Daemonize(app='atomtopubsub', pid = pid, action = main)
+daemon.start()
 
-if __name__ == '__main__':
-    main()
+""" if __name__ == '__main__':
+    main() """
