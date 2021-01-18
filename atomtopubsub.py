@@ -60,7 +60,12 @@ async def parse(parsed, xmpp):
                 print(colored('++ new entry %s' % entry.title, 'green'))
                 
                 if version == 'rss20' or 'rss10':
-                    if hasattr(entry, "description"):
+                    if hasattr(entry, "content"):
+                        soup = BeautifulSoup(entry["content"][0]["value"])
+                        entry["content"][0]["value"] = soup.prettify()
+                        print(entry["content"][0]["value"])
+
+                    elif hasattr(entry, "description"):
                         soup = BeautifulSoup(entry.description, 'html.parser')
                         entry.description = soup.prettify()
                     
