@@ -61,14 +61,15 @@ async def parse(parsed, xmpp):
                 
                 if version == 'rss20' or 'rss10':
                     if hasattr(entry, "content"):
-                        soup = BeautifulSoup(entry["content"][0]["value"])
+                        soup = BeautifulSoup(entry.content[0].value)
                         entry["content"][0]["value"] = soup.prettify()
-                        print(entry["content"][0]["value"])
+                        
 
                     elif hasattr(entry, "description"):
-                        soup = BeautifulSoup(entry.description, 'html.parser')
+                        soup = BeautifulSoup(entry.description)
                         entry.description = soup.prettify()
-                    
+                        print('In description')
+                        
                 elif version == 'atom03':
                     # soup = BeautifulSoup(entry.content[0].value, 'lxml')
                     soup = BeautifulSoup(entry.content[0].value, 'html.parser')

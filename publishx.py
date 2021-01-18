@@ -90,15 +90,16 @@ class Publishx(slixmpp.ClientXMPP):
                 content.text = entry.content[0].value
         
         elif version =='rss20' or 'rss10' or 'atom10':
-            if hasattr(ent, "content"):
+            if hasattr(entry, "content"):
                 content = ET.SubElement(ent, "content")
                 content.set('type', 'text/html')
-                content.text = entry["content"][0]["value"]
-            
+                content.text = entry.content[0].value
+                print('In Content - PublishX')
             elif hasattr(entry, "description"):
                 content = ET.SubElement(ent,"content")
                 content.set('type', 'text/html')
                 content.text = entry.description
+                print('In Description - PublishX')
 #Enclosures
         if hasattr(entry, 'enclosure') :
             enclosure = ET.SubElement(ent, "enclosure")
