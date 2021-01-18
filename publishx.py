@@ -26,7 +26,9 @@ class Publishx(slixmpp.ClientXMPP):
 
         if hasattr(feed, 'title'):
             title = feed.title
-            if hasattr(feed, 'subtitle'):
+            if hasattr(feed, 'description'):
+                description = feed.description
+            elif hasattr(feed, 'subtitle'):
                 description = feed.subtitle
         print(colored('>> create %s' % title, 'blue'))
 
@@ -79,7 +81,7 @@ class Publishx(slixmpp.ClientXMPP):
 
         updated = ET.SubElement(ent, "updated")
         updated.text = entry.updated
-
+#Content
         if version == 'atom3':
 
             if hasattr(entry.content[0], 'type'):
@@ -87,24 +89,36 @@ class Publishx(slixmpp.ClientXMPP):
                 content.set('type', entry.content[0].type)
                 content.text = entry.content[0].value
         
-        elif version =='rss20':
-            content = ET.SubElement(ent,"content")
-            content.set('type', 'text/html')
-            content.text = entry.description
-            
-            
+        elif version =='rss20' or 'rss10' or 'atom10':
+            if hasattr(entry, "description"):
+                content = ET.SubElement(ent,"content")
+                content.set('type', 'text/html')
+                content.text = entry.description
+#Enclosures
+        if hasattr(entry, 'enclosure') :
+            enclosure = ET.SubElement(ent, "enclosure")
+            enclosure.set('length', entry["enclosure"]["length"])
+            enclosure.set('url', entry["enclosure"]["url"])
+            enclosure.set('type', entry["enclosure"]["type"])   
+#Links        
         if hasattr(entry, 'links'):
             for l in entry.links:
                 link = ET.SubElement(ent, "link")
-                link.set('href', l['href'])
-                link.set('type', l['type'])
-                link.set('rel', l['rel'])
-
+                if version == 'atom03' or 'atom10':
+                    link.set('href', l['href'])
+                    link.set('type', l['type'])
+                    link.set('rel', l['rel'])
+ #Tags               
         if hasattr(entry, 'tags'):
             for t in entry.tags:
                 tag = ET.SubElement(ent, "category")
                 tag.set('term', t.term)
-
+        
+        if hasattr(entry,'category'):
+            for c in entry["category"]:
+                cat = ET.SubElement(ent, "category")
+                cat.set('category', entry.category[0])
+#Author
         if version == 'atom03':
             if hasattr(entry, 'authors'):
                 author = ET.SubElement(ent, "author")
@@ -113,7 +127,8 @@ class Publishx(slixmpp.ClientXMPP):
                 if hasattr(entry.authors[0], 'href'):
                     uri = ET.SubElement(author, "uri")
                     uri.text = entry.authors[0].href
-        elif version == 'rss20':
+        
+        elif version == 'rss20' or 'rss10' or 'atom10':
             if hasattr(entry, 'author'):
                 author = ET.SubElement(ent, "author")
                 name = ET.SubElement(ent, "author")

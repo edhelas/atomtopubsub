@@ -59,10 +59,10 @@ async def parse(parsed, xmpp):
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print(colored('++ new entry %s' % entry.title, 'green'))
                 
-                if version == 'rss20':
-                    print(colored('In rss20','red'))
-                    soup = BeautifulSoup(entry.description, 'html.parser')
-                    entry.description = soup.prettify()
+                if version == 'rss20' or 'rss10':
+                    if hasattr(entry, "description"):
+                        soup = BeautifulSoup(entry.description, 'html.parser')
+                        entry.description = soup.prettify()
                     
                 elif version == 'atom03':
                     # soup = BeautifulSoup(entry.content[0].value, 'lxml')
