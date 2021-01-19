@@ -109,7 +109,7 @@ class Publishx(slixmpp.ClientXMPP):
                     link.set('href', l['href'])
                     link.set('type', l['type'])
                     link.set('rel', l['rel'])
-                elif hasattr(entry['link']):
+                elif hasattr(entry, 'link'):
                     link.set('href', entry['link'])
  #Tags                
         if hasattr(entry, 'tags'):
