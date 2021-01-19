@@ -4,6 +4,8 @@ import asyncio
 import feedparser
 import pickle
 
+from slixmpp.exceptions import IqTimeout
+
 from publishx import Publishx
 
 # Add the ability to run atomtopubsub as a daemon - requires Daemonize as a dependency
@@ -52,8 +54,11 @@ async def parse(parsed, xmpp):
                 print('at line %s' % f.bozo_exception.getLineNumber())
 
         if key not in parsed:
-            await xmpp.create(feed['server'], key, f.feed)
-
+            try:
+                await xmpp.create(feed['server'], key, f.feed)
+            except IqTimeout:
+                print('IqTimeout Error for %s' % f.feed)
+                pass
         # We check if we have some new entries
         for entry in reversed(f.entries):
             if key not in parsed or parsed[key] < entry.updated_parsed:
@@ -69,7 +74,7 @@ async def parse(parsed, xmpp):
                         soup = BeautifulSoup(entry.description)
                         entry.description = soup.prettify()
                         print('In description')
-                        
+
                 elif version == 'atom03':
                     # soup = BeautifulSoup(entry.content[0].value, 'lxml')
                     soup = BeautifulSoup(entry.content[0].value, 'html.parser')
@@ -126,7 +131,6 @@ def load():
     except IOError:
         print('Creating the cache')
         return save({})
-
 
 def save(parsed):
     output = open('cache.pkl', 'wb')

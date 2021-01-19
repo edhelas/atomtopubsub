@@ -94,27 +94,24 @@ class Publishx(slixmpp.ClientXMPP):
                 content = ET.SubElement(ent, "content")
                 content.set('type', 'text/html')
                 content.text = entry.content[0].value
-                print('In Content - PublishX')
+                
             elif hasattr(entry, "description"):
                 content = ET.SubElement(ent,"content")
                 content.set('type', 'text/html')
                 content.text = entry.description
                 print('In Description - PublishX')
-#Enclosures
-        if hasattr(entry, 'enclosure') :
-            enclosure = ET.SubElement(ent, "enclosure")
-            enclosure.set('length', entry["enclosure"]["length"])
-            enclosure.set('url', entry["enclosure"]["url"])
-            enclosure.set('type', entry["enclosure"]["type"])   
+             
 #Links        
         if hasattr(entry, 'links'):
             for l in entry.links:
                 link = ET.SubElement(ent, "link")
-                if version == 'atom03' or 'atom10':
+                if hasattr(l, 'href'):
                     link.set('href', l['href'])
                     link.set('type', l['type'])
                     link.set('rel', l['rel'])
- #Tags               
+                elif hasattr(entry['link']):
+                    link.set('href', entry['link'])
+ #Tags                
         if hasattr(entry, 'tags'):
             for t in entry.tags:
                 tag = ET.SubElement(ent, "category")
