@@ -149,7 +149,7 @@ def main():
 
 curr_dir = getcwd() #Needed so that A2SP can find the config files etc when using daemonize
 
-daemon = Daemonize(app='atomtopubsub', pid = pid, action = main, foreground=True, chdir= curr_dir)
+daemon = Daemonize(app='atomtopubsub', pid = pid, action = main, foreground=False, chdir= curr_dir)
 daemon.start()
 
 #if __name__ == '__main__':
