@@ -24,6 +24,8 @@ from termcolor import colored
 from bs4 import BeautifulSoup, Comment
 from xml.etree import ElementTree
 
+
+
 def setup_logging(level):
     log = logging.getLogger('atomtopubsub')
     log.setLevel(level)
@@ -35,6 +37,7 @@ def setup_logging(level):
 
 
 # We feed the pubsub nodes
+
 async def parse(parsed, xmpp):
     imp.reload(config)
 
@@ -52,13 +55,13 @@ async def parse(parsed, xmpp):
                 print(f.bozo_exception.getMessage())
             if hasattr(f.bozo_exception, 'getLineNumber'):
                 print('at line %s' % f.bozo_exception.getLineNumber())
-
+        
         if key not in parsed:
             try:
                 await xmpp.create(feed['server'], key, f.feed)
             except IqTimeout:
-                print('IqTimeout Error for %s' % f.feed)
-                pass
+                print('IqTimeout Error')
+                continue
         # We check if we have some new entries
         for entry in reversed(f.entries):
             if key not in parsed or parsed[key] < entry.updated_parsed:
@@ -106,7 +109,7 @@ async def parse(parsed, xmpp):
                 
             else:
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
-
+        
         # And we update the last updated date for the feed
         try:
             parsed[key] = f.feed.updated_parsed
@@ -149,7 +152,7 @@ def main():
 
 curr_dir = getcwd() #Needed so that A2SP can find the config files etc when using daemonize
 
-daemon = Daemonize(app='atomtopubsub', pid = pid, action = main, foreground=False, chdir= curr_dir)
+daemon = Daemonize(app='atomtopubsub', pid = pid, action = main, foreground=True, chdir= curr_dir)
 daemon.start()
 
 #if __name__ == '__main__':
