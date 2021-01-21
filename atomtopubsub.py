@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import asyncio
+from asyncio.exceptions import IncompleteReadError
 import feedparser
 import pickle
 
@@ -44,7 +45,10 @@ async def parse(parsed, xmpp):
     # We parse all the feeds
     for key, feed in config.feeds.items():
         print(colored('>> parsing %s' % key, 'magenta'))
-        f = feedparser.parse(feed['url'])
+        try:
+            f = feedparser.parse(feed['url'])
+        except IncompleteReadError:
+            continue    
         version = f.version
         print('Version %s' % version)
         
