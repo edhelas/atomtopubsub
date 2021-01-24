@@ -2,8 +2,16 @@
 
 import asyncio
 from asyncio.exceptions import IncompleteReadError
+from http.client import IncompleteRead
+from apscheduler import schedulers
 import feedparser
 import pickle
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.base import BaseScheduler, STATE_STOPPED
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
+
+from os import remove
 
 from slixmpp.exceptions import IqTimeout
 
@@ -41,13 +49,14 @@ def setup_logging(level):
 
 async def parse(parsed, xmpp):
     imp.reload(config)
-
+    
     # We parse all the feeds
     for key, feed in config.feeds.items():
         print(colored('>> parsing %s' % key, 'magenta'))
         try:
             f = feedparser.parse(feed['url'])
-        except IncompleteReadError:
+        except (IncompleteReadError, IncompleteRead) as e:
+            print(e)
             continue    
         version = f.version
         print('Version %s' % version)
@@ -140,11 +149,31 @@ def load():
         return save({})
 
 def save(parsed):
+    
+    scheduler = AsyncIOScheduler()
+    if not scheduler.running:
+        try:
+            scheduler.add_job(clear_cache(), 'interval', hours=16)
+            scheduler.start()
+            scheduler.add_listener(sched_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+        except:
+            pass
+
     output = open('cache.pkl', 'wb')
     pickle.dump(parsed, output)
     output.close()
+    
+    
     return {}
 
+def clear_cache():
+    remove('cache.pkl')
+
+def sched_listener(event):
+    if event.exception:
+        print('The job crashed :')
+    else:
+        print('The job worked :')
 
 def main():
     setup_logging(logging.INFO)
@@ -160,4 +189,4 @@ daemon = Daemonize(app='atomtopubsub', pid = pid, action = main, foreground=True
 daemon.start()
 
 #if __name__ == '__main__':
-#    main()
+#    main()scheduler = AsyncIOScheduler()
