@@ -12,6 +12,7 @@ the entries to a designated [XMPP Pubsub Node](http://xmpp.org/extensions/xep-00
 * jsonpickle
 * slixmpp
 * daemonize
+* apscheduler
 
 AtomToPubsub is built using Python 3.5 and uses the libraries
 
