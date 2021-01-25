@@ -3,14 +3,17 @@
 import asyncio
 from asyncio.exceptions import IncompleteReadError
 from http.client import IncompleteRead
-from apscheduler import schedulers
+from urllib import error
+
 import feedparser
 import pickle
 
+#apscheduler
+from apscheduler import schedulers
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.schedulers.base import BaseScheduler, STATE_STOPPED
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
-
+#cache cleanup
 from os import remove
 
 from slixmpp.exceptions import IqTimeout
@@ -55,7 +58,7 @@ async def parse(parsed, xmpp):
         print(colored('>> parsing %s' % key, 'magenta'))
         try:
             f = feedparser.parse(feed['url'])
-        except (IncompleteReadError, IncompleteRead) as e:
+        except (IncompleteReadError, IncompleteRead, error.URLError) as e:
             print(e)
             continue    
         version = f.version
