@@ -58,7 +58,7 @@ async def parse(parsed, xmpp):
         print(colored('>> parsing %s' % key, 'magenta'))
         try:
             f = feedparser.parse(feed['url'])
-        except Exceptions as e:
+        except Exception as e:
             print(e)
             continue    
         version = f.version
