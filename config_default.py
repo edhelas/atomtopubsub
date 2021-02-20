@@ -7,12 +7,12 @@ feeds = {
             },
         # Add more feeds as you need them using this format
         #'FeedName2' : {
-        #    'url' : 'http://localhost/feedcleaner/?url=FEEDGOESHERE',
+        #    'url' : 'https://example.com/feed',
         #    'server' : 'pubsubserver'
         #    },
         # Remember to add a comma ',' after every close bracket except for the last one
         'Feedname3' : {
-            'url' : 'http://localhost/feedcleaner/?url=http://feedurlhere/rss.xml',
+            'url' : 'http://example.com/rss',
             'server' : 'pubsub.movim.eu'
             }
     }
