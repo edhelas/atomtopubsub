@@ -85,12 +85,12 @@ async def parse(parsed, xmpp):
                 
                 if version == 'rss20' or 'rss10':
                     if hasattr(entry, "content"):
-                        soup = BeautifulSoup(entry.content[0].value)
+                        soup = BeautifulSoup(entry.content[0].value, 'html5lib')
                         entry["content"][0]["value"] = soup.prettify()
                         
 
                     elif hasattr(entry, "description"):
-                        soup = BeautifulSoup(entry.description)
+                        soup = BeautifulSoup(entry.description, 'html5lib')
                         entry.description = soup.prettify()
                         print('In description')
 
@@ -188,7 +188,7 @@ def main():
 
 curr_dir = getcwd() #Needed so that A2SP can find the config files etc when using daemonize
 
-daemon = Daemonize(app='atomtopubsub', pid = pid, action = main, foreground=False, chdir= curr_dir)
+daemon = Daemonize(app='atomtopubsub', pid = pid, action = main, foreground=True, chdir= curr_dir)
 daemon.start()
 
 #if __name__ == '__main__':
