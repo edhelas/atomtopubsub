@@ -18,4 +18,8 @@ AtomToPubsub is built using Python 3.5 and uses the libraries
 
 ## Installation
 
-Please see the [Wiki](https://github.com/edhelas/atomtopubsub/wiki) for more information.
+Expand the source package to a directory that you have permission to run programs. 
+
+Edit the config.py file with your RSS feeds, and login information for your XMPP server.
+
+Then run ./atomtopubsub.py
