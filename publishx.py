@@ -120,7 +120,7 @@ class Publishx(slixmpp.ClientXMPP):
         if hasattr(entry,'category'):
             for c in entry["category"]:
                 cat = ET.SubElement(ent, "category")
-                cat.set('category', entry.category[0])
+                cat.set('category', entry["category"])
 #Author
         if version == 'atom03':
             if hasattr(entry, 'authors'):
