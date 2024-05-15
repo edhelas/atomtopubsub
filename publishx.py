@@ -55,14 +55,14 @@ class Publishx(slixmpp.ClientXMPP):
                       ftype='text-single',
                       value=description)
 
-        task = iq.send(timeout=5)
-        try:
-            await task
-        except IqError as e:
-            if e.etype == 'cancel' and e.condition == 'conflict':
-                print(colored('!! node %s is already created, assuming its configuration is correct' % node, 'yellow'))
-                return
-            raise
+        node_exist = await self.plugin['xep_0060'].get_node_config(server, node)
+        if not node_exist:
+            task = iq.send(timeout=5)
+            try:
+                await task
+            except (IqError, IqTimeout) as e:
+                print('Error:', str(e))
+                raise
 
     async def publish(self, server, node, entry, version):
         iq = self.Iq(stype="set", sto=server)
