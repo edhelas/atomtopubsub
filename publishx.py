@@ -82,7 +82,7 @@ class Publishx(slixmpp.ClientXMPP):
         updated = ET.SubElement(ent, "updated")
         updated.text = entry.updated
 #Content
-        if version == 'atom3':
+        if version == 'atom03':
 
             if hasattr(entry.content[0], 'type'):
                 content = ET.SubElement(ent, "content")
