@@ -114,11 +114,6 @@ class Publishx(slixmpp.ClientXMPP):
                 tag = ET.SubElement(ent, "category")
                 tag.set('term', t.term)
 
-        if hasattr(entry,'category'):
-            for c in entry["category"]:
-                cat = ET.SubElement(ent, "category")
-                cat.set('category', entry.category[0])
-
         if version == 'atom03':
             if hasattr(entry, 'authors'):
                 author = ET.SubElement(ent, "author")
