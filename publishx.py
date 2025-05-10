@@ -42,7 +42,7 @@ class Publishx(slixmpp.ClientXMPP):
         form.addField('pubsub#persist_items',
                       ftype='boolean',
                       value=1)
-        form.addField('pubsub#notify_retract'
+        form.addField('pubsub#notify_retract',
                       ftype='boolean',
                       value=1)
         form.addField('pubsub#title',
