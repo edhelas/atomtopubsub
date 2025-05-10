@@ -64,7 +64,6 @@ async def parse(parsed, xmpp):
         version = f.version
         print('Version %s' % version)
 
-
         if f.bozo == 1:
             print('XML Error')
             if hasattr(f.bozo_exception, 'getMessage'):

@@ -36,7 +36,13 @@ class Publishx(slixmpp.ClientXMPP):
         iq['pubsub']['create']['node'] = node
         form = iq['pubsub']['configure']['form']
         form['type'] = 'submit'
+        form.addField('pubsub#type',
+                      ftype='text-single',
+                      value='urn:xmpp:pubsub-social-feed:1')
         form.addField('pubsub#persist_items',
+                      ftype='boolean',
+                      value=1)
+        form.addField('pubsub#notify_retract')
                       ftype='boolean',
                       value=1)
         form.addField('pubsub#title',
@@ -44,10 +50,10 @@ class Publishx(slixmpp.ClientXMPP):
                       value=title)
         form.addField('pubsub#max_items',
                       ftype='text-single',
-                      value='20')
-        form.addField('pubsub#type',
+                      value='max')
+        form.addField('pubsub#send_last_published_item',
                       ftype='text-single',
-                      value=NS_ATOM)
+                      value='never')
         form.addField('pubsub#deliver_payloads',
                       ftype='boolean',
                       value=0)
@@ -55,14 +61,16 @@ class Publishx(slixmpp.ClientXMPP):
                       ftype='text-single',
                       value=description)
 
-        task = iq.send(timeout=5)
-        try:
-            await task
-        except IqError as e:
-            if e.etype == 'cancel' and e.condition == 'conflict':
-                print(colored('!! node %s is already created, assuming its configuration is correct' % node, 'yellow'))
-                return
-            raise
+        node_exist = await self.plugin['xep_0060'].get_node_config(server, node)
+        if not node_exist:
+            task = iq.send(timeout=5)
+            try:
+                await task
+            except (IqError, IqTimeout) as e:
+                print('Error:', str(e))
+                raise
+        else:
+            print(colored('!! node %s is already created, assuming its configuration is correct' % node, 'yellow'))
 
     async def publish(self, server, node, entry, version):
         iq = self.Iq(stype="set", sto=server)
