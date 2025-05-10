@@ -52,7 +52,7 @@ def setup_logging(level):
 
 async def parse(parsed, xmpp):
     imp.reload(config)
-    
+
     # We parse all the feeds
     for key, feed in config.feeds.items():
         print(colored('>> parsing %s' % key, 'magenta'))
@@ -60,18 +60,18 @@ async def parse(parsed, xmpp):
             f = feedparser.parse(feed['url'])
         except Exception as e:
             print(e)
-            continue    
+            continue
         version = f.version
         print('Version %s' % version)
-        
-        
+
+
         if f.bozo == 1:
             print('XML Error')
             if hasattr(f.bozo_exception, 'getMessage'):
                 print(f.bozo_exception.getMessage())
             if hasattr(f.bozo_exception, 'getLineNumber'):
                 print('at line %s' % f.bozo_exception.getLineNumber())
-        
+
         if key not in parsed:
             try:
                 await xmpp.create(feed['server'], key, f.feed)
@@ -82,12 +82,12 @@ async def parse(parsed, xmpp):
         for entry in reversed(f.entries):
             if key not in parsed or parsed[key] < entry.updated_parsed:
                 print(colored('++ new entry %s' % entry.title, 'green'))
-                
+
                 if version == 'rss20' or 'rss10':
                     if hasattr(entry, "content"):
                         soup = BeautifulSoup(entry.content[0].value, 'html5lib')
                         entry["content"][0]["value"] = soup.prettify()
-                        
+
 
                     elif hasattr(entry, "description"):
                         soup = BeautifulSoup(entry.description, 'html5lib')
@@ -110,7 +110,7 @@ async def parse(parsed, xmpp):
                         entry.content[0].value = content_value
                     except TypeError:
                         pass
-                
+
                     try:
                         ElementTree.fromstring(''.join(entry.content[0].value))
                     except Exception as e:
@@ -119,13 +119,13 @@ async def parse(parsed, xmpp):
                         continue
                 else:
                     print(colored('>> Yet to be done', "yellow"))
-                    
+
                 await xmpp.publish(feed['server'], key, entry, version)
-                
-                
+
+
             else:
                 print(colored('++ update entry %s' % entry.title, 'yellow'))
-        
+
         # And we update the last updated date for the feed
         try:
             parsed[key] = f.feed.updated_parsed
@@ -152,7 +152,6 @@ def load():
         return save({})
 
 def save(parsed):
-    
     scheduler = AsyncIOScheduler()
     if not scheduler.running:
         try:
@@ -165,8 +164,8 @@ def save(parsed):
     output = open('cache.pkl', 'wb')
     pickle.dump(parsed, output)
     output.close()
-    
-    
+
+
     return {}
 
 def clear_cache():
@@ -184,7 +183,9 @@ def main():
     xmpp = Publishx(config)
     xmpp.connect()
     xmpp.add_event_handler('session_start', lambda _: asyncio.ensure_future(parse(load(), xmpp)))
-    xmpp.process()
+
+    asyncio.get_event_loop().run_forever()
+    #xmpp.process()
 
 curr_dir = getcwd() #Needed so that A2SP can find the config files etc when using daemonize
 
