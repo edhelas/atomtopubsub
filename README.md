@@ -1,7 +1,9 @@
 ## About AtomToPubsub
 
-AtomToPubsub is a simple Python script that parses Atom + RSS feeds and pushes
-the entries to a designated [XMPP Pubsub Node](http://xmpp.org/extensions/xep-0060.html)
+AtomToPubsub is a simple Python script that parses Atom 1.0 feeds and pushes
+the entries to a designated [XMPP Pubsub Node](http://xmpp.org/extensions/xep-0060.html).
+
+Atom 0.3 and RSS feeds are also supported but only as "best effort", things might not work as expected.
 
 ## Requirements
 

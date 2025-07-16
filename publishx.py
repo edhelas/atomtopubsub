@@ -4,7 +4,7 @@ from termcolor import colored
 import slixmpp
 from slixmpp.xmlstream import ET
 import slixmpp.plugins.xep_0060.stanza.pubsub as pubsub
-from slixmpp.exceptions import IqError, IqTimeout
+from slixmpp.exceptions import IqError, IqTimeout, XMPPError
 import re
 
 
@@ -61,7 +61,13 @@ class Publishx(slixmpp.ClientXMPP):
                       ftype='text-single',
                       value=description)
 
-        node_exist = await self.plugin['xep_0060'].get_node_config(server, node)
+        node_exist = False
+
+        try:
+            node_exist = await self.plugin['xep_0060'].get_node_config(server, node)
+        except XMPPError as error:
+            print(colored('!! Could not retrieve configure form from node %s' % node, 'yellow'))
+
         if not node_exist:
             task = iq.send(timeout=5)
             try:
